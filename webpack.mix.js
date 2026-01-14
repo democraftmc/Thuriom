@@ -17,7 +17,7 @@ const mix = require('laravel-mix');
 const vendorPath = 'public/assets/vendor';
 
 const vendorDependencies = [
-    'axios', 'bootstrap', 'easymde', '@simonwep/pickr:pickr',
+    'axios', 'easymde', '@simonwep/pickr:pickr',
 ];
 
 for (const name of vendorDependencies) {
@@ -28,7 +28,14 @@ for (const name of vendorDependencies) {
 
 mix.disableSuccessNotifications()
     .setPublicPath('public/assets/')
-    .sass('resources/sass/admin/admin.scss', `${vendorPath}/admin.css`)
+    .postCss('resources/css/admin.css', `${vendorPath}/admin.css`, [
+        require('@tailwindcss/postcss'),
+        require('autoprefixer'),
+    ])
+    .postCss('resources/css/app.css', 'public/css/app.css', [
+        require('@tailwindcss/postcss'),
+        require('autoprefixer'),
+    ])
     .js('resources/js/admin/admin.js', `${vendorPath}/admin.js`)
     .sass('node_modules/bootstrap-icons/font/bootstrap-icons.scss', `${vendorPath}/bootstrap-icons/bootstrap-icons.css`)
     .copyDirectory('node_modules/bootstrap-icons/font/fonts', `${vendorPath}/bootstrap-icons/fonts`)
