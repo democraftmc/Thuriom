@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="@if(dark_theme())dark@else light@endif">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,90 +27,87 @@
     <link href="{{ asset('vendor/admin.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
-<body class="bg-base-100">
+<body @if(dark_theme()) data-bs-theme="dark" @endif>
     <!-- Page Wrapper -->
-    <div class="flex min-h-screen">
+    <div class="wrapper">
 
         <!-- Sidebar -->
-        <aside class="sidebar bg-base-200 w-64 fixed top-0 left-0 bottom-0 overflow-y-auto shadow-lg">
-            <div class="p-4">
+        <nav id="sidebar" class="sidebar js-sidebar">
+            <div class="sidebar-content js-simplebar">
 
-                <a class="flex items-center justify-center py-4" href="{{ route('home') }}">
-                    <div class="text-center">
-                        <img src="{{ asset('svg/azuriom-text-white.svg') }}" alt="Azuriom" class="max-w-[150px]">
+                <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home') }}">
+                    <div class="sidebar-brand-text mx-3">
+                        <img src="{{ asset('svg/azuriom-text-white.svg') }}" alt="Azuriom">
 
-                        <small class="block text-center font-bold text-xs mt-2 opacity-70">
+                        <small class="d-block text-center font-weight-bold">
                             {{ game()->name() }} - v{{ Azuriom::version() }}
                         </small>
                     </div>
                 </a>
 
-                <ul class="menu p-0 mt-4 gap-1">
-                    <li class="{{ add_active('admin.dashboard') }}">
-                        <a class="flex items-center gap-3 rounded-lg px-4 py-2 hover:bg-base-300 transition-colors {{ add_active('admin.dashboard', 'bg-primary text-primary-content') }}" href="{{ route('admin.dashboard') }}">
-                            <i class="bi bi-speedometer"></i> <span>{{ trans('admin.nav.dashboard') }}</span>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-item {{ add_active('admin.dashboard') }}">
+                        <a class="sidebar-link" href="{{ route('admin.dashboard') }}">
+                            <i class="bi bi-speedometer"></i> {{ trans('admin.nav.dashboard') }}
                         </a>
                     </li>
 
                     @canany(['admin.settings', 'admin.navbar', 'admin.servers'])
-                        <li class="menu-title text-xs font-semibold uppercase opacity-60 mt-4">
+                        <li class="sidebar-header">
                             {{ trans('admin.nav.settings.heading') }}
                         </li>
                     @endcanany
 
                     @can('admin.settings')
-                        <li class="{{ add_active('admin.settings.*', 'admin.social-links.*') }}">
-                            <details @if(Route::is('admin.settings.*', 'admin.social-links.*')) open @endif>
-                                <summary class="flex items-center gap-3">
-                                    <i class="bi bi-gear"></i>
-                                    <span>{{ trans('admin.nav.settings.heading') }}</span>
-                                </summary>
-                                <ul class="ml-4">
-                                    <li class="{{ add_active('admin.settings.index') }}">
-                                        <a class="{{ add_active('admin.settings.index', 'bg-primary text-primary-content') }}" href="{{ route('admin.settings.index') }}">
-                                            {{ trans('admin.nav.settings.global') }}
+                        <li class="sidebar-item {{ add_active('admin.settings.*', 'admin.social-links.*') }}">
+                            <a class="sidebar-link {{ Route::is('admin.settings.*', 'admin.social-links.*') ? '' : 'collapsed'}}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSettings" aria-expanded="true" aria-controls="collapseSettings">
+                                <i class="bi bi-gear"></i>
+                                <span>{{ trans('admin.nav.settings.heading') }}</span>
+                            </a>
+                            <ul id="collapseSettings" class="sidebar-dropdown list-unstyled collapse {{ Route::is('admin.settings.*', 'admin.social-links.*') ? 'show' : ''}}" data-parent="#accordionSidebar">
+                                <li class="sidebar-item {{ add_active('admin.settings.index') }}">
+                                    <a class="sidebar-link" href="{{ route('admin.settings.index') }}">
+                                        {{ trans('admin.nav.settings.global') }}
+                                    </a>
+                                </li>
+                                <li class="sidebar-item {{ add_active('admin.settings.home') }}">
+                                    <a class="sidebar-link" href="{{ route('admin.settings.home') }}">
+                                        {{ trans('admin.nav.settings.home') }}
+                                    </a>
+                                </li>
+                                @if(! oauth_login())
+                                    <li class="sidebar-item {{ add_active('admin.settings.auth') }}">
+                                        <a class="sidebar-link" href="{{ route('admin.settings.auth') }}">
+                                            {{ trans('admin.nav.settings.auth') }}
                                         </a>
                                     </li>
-                                    <li class="{{ add_active('admin.settings.home') }}">
-                                        <a class="{{ add_active('admin.settings.home', 'bg-primary text-primary-content') }}" href="{{ route('admin.settings.home') }}">
-                                            {{ trans('admin.nav.settings.home') }}
-                                        </a>
-                                    </li>
-                                    @if(! oauth_login())
-                                        <li class="{{ add_active('admin.settings.auth') }}">
-                                            <a class="{{ add_active('admin.settings.auth', 'bg-primary text-primary-content') }}" href="{{ route('admin.settings.auth') }}">
-                                                {{ trans('admin.nav.settings.auth') }}
-                                            </a>
-                                        </li>
-                                    @endif
-                                    <li class="{{ add_active('admin.settings.mail') }}">
-                                        <a class="{{ add_active('admin.settings.mail', 'bg-primary text-primary-content') }}" href="{{ route('admin.settings.mail') }}">
-                                            {{ trans('admin.nav.settings.mail') }}
-                                        </a>
-                                    </li>
-                                    <li class="{{ add_active('admin.settings.performance') }}">
-                                        <a class="{{ add_active('admin.settings.performance', 'bg-primary text-primary-content') }}" href="{{ route('admin.settings.performance') }}">
-                                            {{ trans('admin.nav.settings.performances') }}
-                                        </a>
-                                    </li>
-                                    <li class="{{ add_active('admin.settings.maintenance') }}">
-                                        <a class="{{ add_active('admin.settings.maintenance', 'bg-primary text-primary-content') }}" href="{{ route('admin.settings.maintenance') }}">
-                                            {{ trans('admin.nav.settings.maintenance') }}
-                                        </a>
-                                    </li>
-                                    <li class="{{ add_active('admin.social-links.*') }}">
-                                        <a class="{{ add_active('admin.social-links.*', 'bg-primary text-primary-content') }}" href="{{ route('admin.social-links.index') }}">
-                                            {{ trans('admin.nav.settings.social') }}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </details>
+                                @endif
+                                <li class="sidebar-item {{ add_active('admin.settings.mail') }}">
+                                    <a class="sidebar-link" href="{{ route('admin.settings.mail') }}">
+                                        {{ trans('admin.nav.settings.mail') }}
+                                    </a>
+                                </li>
+                                <li class="sidebar-item {{ add_active('admin.settings.performance') }}">
+                                    <a class="sidebar-link" href="{{ route('admin.settings.performance') }}">
+                                        {{ trans('admin.nav.settings.performances') }}
+                                    </a>
+                                </li>
+                                <li class="sidebar-item {{ add_active('admin.settings.maintenance') }}">
+                                    <a class="sidebar-link" href="{{ route('admin.settings.maintenance') }}">
+                                        {{ trans('admin.nav.settings.maintenance') }}
+                                    </a>
+                                <li class="sidebar-item {{ add_active('admin.social-links.*') }}">
+                                    <a class="sidebar-link" href="{{ route('admin.social-links.index') }}">
+                                        {{ trans('admin.nav.settings.social') }}
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     @endcan
 
                     @can('admin.navbar')
-                        <li class="{{ add_active('admin.navbar-elements.*') }}">
-                            <a class="flex items-center gap-3 {{ add_active('admin.navbar-elements.*', 'bg-primary text-primary-content') }}" href="{{ route('admin.navbar-elements.index') }}">
+                        <li class="sidebar-item {{ add_active('admin.navbar-elements.*') }}">
+                            <a class="sidebar-link" href="{{ route('admin.navbar-elements.index') }}">
                                 <i class="bi bi-list"></i>
                                 <span>{{ trans('admin.nav.settings.navbar') }}</span>
                             </a>
@@ -118,8 +115,8 @@
                     @endcan
 
                     @can('admin.servers')
-                        <li class="{{ add_active('admin.servers.*') }}">
-                            <a class="flex items-center gap-3 {{ add_active('admin.servers.*', 'bg-primary text-primary-content') }}" href="{{ route('admin.servers.index') }}">
+                        <li class="sidebar-item {{ add_active('admin.servers.*') }}">
+                            <a class="sidebar-link" href="{{ route('admin.servers.index') }}">
                                 <i class="bi bi-hdd-network"></i>
                                 <span>{{ trans('admin.nav.settings.servers') }}</span>
                             </a>
@@ -127,12 +124,13 @@
                     @endcan
 
                     @canany(['admin.users', 'admin.roles'])
-                        <li class="menu-title text-xs font-semibold uppercase opacity-60 mt-4">{{ trans('admin.nav.users.heading') }}</li>
+                        <!-- Heading -->
+                        <li class="sidebar-header">{{ trans('admin.nav.users.heading') }}</li>
                     @endcanany
 
                     @can('admin.users')
-                        <li class="{{ add_active('admin.users.*') }}">
-                            <a class="flex items-center gap-3 {{ add_active('admin.users.*', 'bg-primary text-primary-content') }}" href="{{ route('admin.users.index') }}">
+                        <li class="sidebar-item {{ add_active('admin.users.*') }}">
+                            <a class="sidebar-link" href="{{ route('admin.users.index') }}">
                                 <i class="bi bi-people"></i>
                                 <span>{{ trans('admin.nav.users.users') }}</span>
                             </a>
@@ -140,8 +138,8 @@
                     @endcan
 
                     @can('admin.roles')
-                        <li class="{{ add_active('admin.roles.*') }}">
-                            <a class="flex items-center gap-3 {{ add_active('admin.roles.*', 'bg-primary text-primary-content') }}" href="{{ route('admin.roles.index') }}">
+                        <li class="sidebar-item {{ add_active('admin.roles.*') }}">
+                            <a class="sidebar-link" href="{{ route('admin.roles.index') }}">
                                 <i class="bi bi-person-badge"></i>
                                 <span>{{ trans('admin.nav.users.roles') }}</span>
                             </a>
@@ -149,7 +147,7 @@
                     @endcan
 
                     @can('admin.users')
-                        <li class="{{ add_active('admin.bans.*') }}">
+                        <li class="sidebar-item {{ add_active('admin.bans.*') }}">
                             <a class="sidebar-link" href="{{ route('admin.bans.index') }}">
                                 <i class="bi bi-person-x"></i>
                                 <span>{{ trans('admin.nav.users.bans') }}</span>

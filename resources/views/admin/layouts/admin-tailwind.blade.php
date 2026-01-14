@@ -386,7 +386,7 @@
                     <!-- Theme Toggle -->
                     <div class="form-control">
                         <label class="swap swap-rotate">
-                            <input type="checkbox" @if(dark_theme()) checked @endif onclick="window.location.href='{{ route('profile.theme') }}'"/>
+                            <input type="checkbox" @if(dark_theme()) checked @endif data-theme-toggle data-theme-url="{{ route('profile.theme') }}"/>
                             <i class="bi bi-sun-fill swap-on text-xl"></i>
                             <i class="bi bi-moon-stars-fill swap-off text-xl"></i>
                         </label>
@@ -488,6 +488,16 @@
                 const form = document.getElementById('confirmDeleteForm');
                 form.action = e.target.dataset.confirmDelete;
                 document.getElementById('confirmDeleteModal').showModal();
+            }
+        });
+
+        // Theme toggle handler
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('[data-theme-toggle]')) {
+                const url = e.target.dataset.themeUrl;
+                if (url) {
+                    window.location.href = url;
+                }
             }
         });
     </script>
